@@ -1,0 +1,24 @@
+{
+  "openedFlows": [
+    "main"
+  ],
+  "activeBottomPanel": "流程参数",
+  "activeFlow": "main",
+  "breakPoints": [
+    {
+      "FlowName": "main",
+      "Lines": null,
+      "BlockIds": []
+    },
+    {
+      "FlowName": "子流程1",
+      "Lines": null,
+      "BlockIds": []
+    },
+    {
+      "FlowName": "module1",
+      "Lines": [],
+      "BlockIds": null
+    }
+  ]
+}
