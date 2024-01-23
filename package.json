@@ -28,13 +28,6 @@
       "kind": "Visual",
       "opened": false,
       "groupName": null
-    },
-    {
-      "name": "module1",
-      "filename": "module1",
-      "kind": "Code",
-      "opened": false,
-      "groupName": null
     }
   ],
   "flow_groups": [],
