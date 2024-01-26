@@ -2,7 +2,7 @@
   "openedFlows": [
     "main"
   ],
-  "activeBottomPanel": "流程参数",
+  "activeBottomPanel": "运行日志",
   "activeFlow": "main",
   "breakPoints": [
     {
@@ -14,11 +14,6 @@
       "FlowName": "子流程1",
       "Lines": null,
       "BlockIds": []
-    },
-    {
-      "FlowName": "module1",
-      "Lines": [],
-      "BlockIds": null
     }
   ]
 }

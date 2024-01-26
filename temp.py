@@ -34,50 +34,54 @@ from alibabacloud_tea_util.client import Client as UtilClient
 from sqlalchemy import create_engine, text
 # 导入pandas模块，用于数据处理
 import pandas as pd
-print("所有模块成功导入")
+
+# 弹出选择对话框，让用户选择操作
+select_dialog = xbot_visual.dialog.show_select_dialog(
+    title=None,  # 对话框标题
+    label=None,  # 对话框标签
+    select_type="list",  # 选择类型为列表
+    select_model="single",  # 选择模式为单选
+    values=lambda: ["爬取商品详情页图片", "OCR识别"],  # 提供给用户的选项
+    is_selected_first=True,  # 默认选中第一个
+    storage_key="498910e4-268c-4b57-a1fe-065daf8f9be8",  # 存储键值
+    _block=("main", 1, "打开选择对话框")  # 日志记录块信息
+)
+# 如果用户选择了"爬取商品详情页图片"并且有按下按钮
+if xbot_visual.workflow.multiconditional_judgment(
+        relation="and",  # 逻辑关系为"与"
+        conditionals=[  # 条件数组
+            {"operand1": select_dialog.values, "operand2": lambda: "商品详情页图片爬取", "operator": "=="},
+            {"operand1": select_dialog.pressed_button, "operand2": lambda: None, "operator": "!="}
+        ],
+        _block=("main", 2, "IF 多条件")  # 日志记录块信息
+):
+    # 打印日志，表示正在进行OCR识别
+    xbot_visual.programing.log(type="info", text=lambda: "正在进行商品详情页图片爬取", _block=("main", 3, "打印日志"))
+    # 打印出用户按下的按钮
+    xbot_visual.programing.log(type="info", text=select_dialog.pressed_button, _block=("main", 4, "打印日志"))
+# 如果用户选择了"OCR识别"并且有按下按钮
+elif xbot_visual.workflow.multiconditional_judgment(
+        relation="and",  # 逻辑关系为"与"
+        conditionals=[  # 条件数组
+            {"operand1": select_dialog.values, "operand2": lambda: "OCR识别", "operator": "=="},
+            {"operand1": select_dialog.values, "operand2": lambda: None, "operator": "!="}
+        ],
+        _block=("main", 5, "Else IF 多条件")  # 日志记录块信息
+):
+    # 打印日志，表示正在进行OCR识别
+    xbot_visual.programing.log(type="info", text=lambda: "正在进行OCR识别", _block=("main", 3, "打印日志"))
+    # 打印出用户按下的按钮
+    xbot_visual.programing.log(type="info", text=select_dialog.pressed_button, _block=("main", 4, "打印日志"))
+    # 弹出选择文件夹对话框
+    select_folder_dialog = xbot_visual.dialog.show_select_folder_dialog(
+        title="\"请选择商品ID所对应的文件夹\"",  # 对话框标题
+        folder="",  # 默认文件夹为空
+        _block=("main", 6, "打开选择文件夹对话框")  # 日志记录块信息
+    )
+    # 打印选择的文件夹路径
+    xbot_visual.programing.log(type="info", text=select_folder_dialog.folder, _block=("main", 7, "打印日志"))
 
 
-# # 弹出选择对话框，让用户选择操作
-# select_dialog = xbot_visual.dialog.show_select_dialog(
-#     title=None,  # 对话框标题
-#     label=None,  # 对话框标签
-#     select_type="list",  # 选择类型为列表
-#     select_model="single",  # 选择模式为单选
-#     values=lambda: ["爬取商品详情页图片", "OCR识别"],  # 提供给用户的选项
-#     is_selected_first=True,  # 默认选中第一个
-#     storage_key="498910e4-268c-4b57-a1fe-065daf8f9be8",  # 存储键值
-#     _block=("main", 1, "打开选择对话框")  # 日志记录块信息
-# )
-# # 如果用户选择了"爬取商品详情页图片"并且有按下按钮
-# if xbot_visual.workflow.multiconditional_judgment(
-#         relation="and",  # 逻辑关系为"与"
-#         conditionals=[  # 条件数组
-#             {"operand1": select_dialog.values, "operand2": lambda: "爬取商品详情页图片", "operator": "=="},
-#             {"operand1": select_dialog.pressed_button, "operand2": lambda: None, "operator": "!="}
-#         ],
-#         _block=("main", 2, "IF 多条件")  # 日志记录块信息
-# ):
-#     # 打印日志，表示正在进行OCR识别
-#     xbot_visual.programing.log(type="info", text=lambda: "正在进行OCR识别", _block=("main", 3, "打印日志"))
-#     # 打印出用户按下的按钮
-#     xbot_visual.programing.log(type="info", text=select_dialog.pressed_button, _block=("main", 4, "打印日志"))
-# # 如果用户选择了"OCR识别"并且有按下按钮
-# elif xbot_visual.workflow.multiconditional_judgment(
-#         relation="and",  # 逻辑关系为"与"
-#         conditionals=[  # 条件数组
-#             {"operand1": select_dialog.values, "operand2": lambda: "OCR识别", "operator": "=="},
-#             {"operand1": select_dialog.values, "operand2": lambda: None, "operator": "!="}
-#         ],
-#         _block=("main", 5, "Else IF 多条件")  # 日志记录块信息
-# ):
-#     # 弹出选择文件夹对话框
-#     select_folder_dialog = xbot_visual.dialog.show_select_folder_dialog(
-#         title="\"请选择商品ID所对应的文件夹\"",  # 对话框标题
-#         folder="",  # 默认文件夹为空
-#         _block=("main", 6, "打开选择文件夹对话框")  # 日志记录块信息
-#     )
-#     # 打印选择的文件夹路径
-#     xbot_visual.programing.log(type="info", text=select_folder_dialog.folder, _block=("main", 7, "打印日志"))
 #     # 弹出选择文件对话框
 #     select_file_dialog = xbot_visual.dialog.show_select_file_dialog(
 #         title=lambda: "请选择需要进行OCR的图片",  # 对话框标题

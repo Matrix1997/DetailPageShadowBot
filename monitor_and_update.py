@@ -3,15 +3,21 @@ import json
 import os
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from datetime import datetime
 
 class FileMonitorHandler(FileSystemEventHandler):
-    def __init__(self, filename, callback):
+    def __init__(self, filename, callback, debounce_interval):
         self.filename = filename
         self.callback = callback
+        self.debounce_interval = debounce_interval  # 时间间隔阈值，单位为秒
+        self.last_modified = datetime.now()  # 初始化上次修改时间
 
     def on_modified(self, event):
         if event.src_path == self.filename:
-            self.callback()
+            current_time = datetime.now()
+            if (current_time - self.last_modified).total_seconds() > self.debounce_interval:
+                self.last_modified = current_time
+                self.callback()
 
 def transform_code(main_py_content):
     # 提取和转换代码的逻辑
@@ -48,11 +54,15 @@ def update_json_file():
         file.seek(0)
         json.dump(data, file, indent=4)
         file.truncate()
+    
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"json文件中的代码段已更新 - {current_time}")
 
 def monitor_file_changes():
     path = '.'  # 当前目录
     filename = os.path.join(path, 'main.py')
-    event_handler = FileMonitorHandler(filename, update_json_file)
+    debounce_interval = 0.5  # 设置防抖动时间间隔为0.5秒
+    event_handler = FileMonitorHandler(filename, update_json_file, debounce_interval)
     observer = Observer()
     observer.schedule(event_handler, path, recursive=False)
     observer.start()
